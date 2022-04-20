@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>slides.knit</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="resources/css/progress.css" type="text/css" />
+    <link rel="stylesheet" href="resources/css/adds.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+class: inverse, left, middle
+
+background-image: url(resources/images/cover.gif)
+background-size: cover
+
+# Análise de dados de COVID 19: &lt;br&gt; utilizando CP4D e DB2
+
+## Educathon
+
+&lt;img src="resources/images/logo-ibm.png" width="150px"/&gt;
+
+Thiago Pires | Abr 2022
+
+---
+layout: true
+
+background-image: url(resources/images/logo-ibm.png)
+background-position: 97% 3%
+background-size: 7%
+
+---
+class: left middle
+background-color: #00b33c
+
+# Criando uma conta na IBM Cloud
+
+---
+# Criando uma conta na IBM Cloud
+
+.pull-left[
+- Acesse https://cloud.ibm.com
+- Clicar em &lt;mark&gt;Create an account&lt;/mark&gt;
+
+&lt;img src="resources/images/ibm-cloud-login.png" width="90%" /&gt;
+]
+
+.pull-right[
+- Preencha o formulário com o email e informações pessoais
+- &lt;mark&gt;Não precisa incluir um cartão de crédito&lt;/mark&gt; para utilizar os recursos da cloud necessários para este workshop!
+
+&lt;img src="resources/images/ibm-cloud-registration.png" width="90%" /&gt;
+
+]
+
+---
+class: left middle
+background-color: #00b33c
+
+# Cloud Pak for Data
+
+---
+# Cloud Pak for Data
+
+&gt;*O Cloud Pak for Data (CP4D) &lt;mark&gt;é uma plataforma de análise que ajuda a preparar dados para inteligência artificial (IA)&lt;/mark&gt;. Ele permite que engenheiros de dados, administradores de dados, cientistas de dados e analistas de negócios colaborem usando uma plataforma multicloud integrada.*
+
+## Acessando o recurso na Cloud
+
+.pull-left[
+&lt;img src="resources/images/cp4d.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+
+&lt;mark&gt;Clicar em Launch&lt;/mark&gt; para iniciar o recurso.
+
+&lt;img src="resources/images/cp4d-overview.png" width="60%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# Bem-vindo ao Cloud Pak for Data
+
+&lt;img src="resources/images/cp4d-welcome.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+## Criar um projeto
+
+.pull-left[
+&lt;img src="resources/images/cp4d-project.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+Em seguida:
+- Definir um none (mandatório)
+- Colocar uma descrição (opcional)
+- Associar um Cloud Object Storage (mandatório)
+]
+
+---
+# Visão geral do projeto
+&lt;img src="resources/images/cp4d-assets.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+# Criar serviços
+
+.pull-left[
+- Clicar em &lt;mark&gt;Create a service&lt;/mark&gt;.
+&lt;img src="resources/images/cp4d-service.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+- Adicionar &lt;mark&gt;Watson Studio&lt;/mark&gt;
+&lt;img src="resources/images/cp4d-watson-studio.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+- Ir para https://dataplatform.cloud.ibm.com/projects/ e clicar no projeto criado anteriormente
+]
+
+.pull-right[
+- Ir para &lt;mark&gt;Launch IDE&gt;RStudio&lt;/mark&gt;
+&lt;img src="resources/images/cp4d-ide.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+- &lt;mark&gt;Launch RStudio&lt;/mark&gt; com a configuração sugerida
+&lt;img src="resources/images/cp4d-rstudio.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# RStudio
+&lt;img src="resources/images/cp4d-rstudio-start.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+# Adicionando o DB2 no projeto
+
+&gt;*Um &lt;mark&gt;banco de dados SQL&lt;/mark&gt; em cloud totalmente gerenciado e com escalabilidade sob demanda de computação e armazenamento.*
+
+.pull-left[
+- Ir na &lt;mark&gt;lista de recursos&lt;/mark&gt;
+&lt;img src="resources/images/cp4d-db2.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"slideNumberFormat": "<div class=\"progress-bar-container\">\n  <div class=\"progress-bar\" style=\"width: calc(%current% / %total% * 100%);\">\n  </div>\n</div>"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
