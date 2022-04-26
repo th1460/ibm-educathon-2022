@@ -1,4 +1,5 @@
 ---
+title: "IBM|Educathon"
 output:
   xaringan::moon_reader:
     seal: false
@@ -20,7 +21,8 @@ output:
 
 knitr::opts_chunk$set(message = FALSE, 
                       warning = FALSE, 
-                      fig.retina = 3)
+                      fig.retina = 3,
+                      comment = NA)
 
 ```
 
@@ -35,7 +37,8 @@ background-size: cover
 
 <img src="resources/images/logo-ibm.png" width="150px"/>
 
-Thiago Pires | Abr 2022
+Thiago Pires | Abr 2022 <br>
+[github.com/th1460/ibm-educathon-2022](https://github.com/th1460/ibm-educathon-2022)
 
 ---
 layout: true
@@ -74,7 +77,7 @@ knitr::include_graphics("resources/images/ibm-cloud-registration.png")
 
 ---
 class: left middle
-background-color: #00b33c
+background-color: #ffcc31
 
 # Cloud Pak for Data
 
@@ -168,12 +171,305 @@ knitr::include_graphics("resources/images/cp4d-rstudio-start.png")
 >*Um <mark>banco de dados SQL</mark> em cloud totalmente gerenciado e com escalabilidade sob demanda de computação e armazenamento.*
 
 .pull-left[
-- Ir na <mark>lista de recursos</mark>
+- Ir na <mark>pesquisa por recursos</mark>
 ```{r echo=FALSE, out.width="90%", fig.align="center"}
 knitr::include_graphics("resources/images/cp4d-db2.png")
+```
+
+- O DB2 estará listado como <mark>ativo</mark>
+```{r echo=FALSE, out.width="90%", fig.align="center"}
+knitr::include_graphics("resources/images/cp4d-db2-active.png")
 ```
 ]
 
 .pull-right[
+- <mark>Criar credencial</mark> de acesso
+```{r echo=FALSE, out.width="90%", fig.align="center"}
+knitr::include_graphics("resources/images/cp4d-db2-credential.png")
+```
 
+>*<mark>SQL significa Standard Query Language</mark>, literalmente a linguagem padrão para realizar queries. A linguagem SQL é utilizada de maneira relativamente parecida entre os principais bancos de dados relacionais do mercado*
+]
+
+---
+# Preparando o ambiente
+
+Baixar repositório no RStudio
+```{bash eval=FALSE}
+git clone git@github.com:th1460/ibm-educathon-2022.git
+```
+
+Instalar bibliotecas que serão utilizadas no projeto
+```{r eval=FALSE}
+install.packages("renv")
+renv::restore()
+```
+
+---
+class: left middle
+background-color: #d74c3c
+
+# Análises
+
+---
+# Ler dados bruto
+
+```{r}
+require(magrittr, include.only = "%>%")
+require(dbplyr)
+
+url <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+
+covid19 <- 
+  read.csv(url, stringsAsFactors = FALSE)
+
+covid19 %>% 
+  dplyr::select(1:9) %>%
+  dplyr::glimpse()
+```
+
+---
+# Preparar dados
+
+.pull-left[
+```{r preparar, eval=FALSE}
+(covid19 <- 
+   covid19 %>% 
+   dplyr::filter(Country.Region %in% 
+                   c("Brazil", "Peru", "Bolivia", 
+                     "Chile", "Argentina", "Colombia",
+                     "Venezuela", "Ecuador", "Uruguay",
+                     "Paraguay")) %>% 
+   dplyr::select(- Province.State) %>% 
+   tidyr::pivot_longer(!Country.Region:Long, 
+                       names_to = "date", 
+                       values_to = "cumulate") %>% 
+   dplyr::group_by(Country.Region) %>% 
+   dplyr::mutate(date = gsub("X", "", date) %>% 
+                   gsub("\\.", "-", .) %>% 
+                   lubridate::mdy(),
+                 value = cumulate - dplyr::lag(cumulate)) %>% 
+   dplyr::ungroup() %>%
+   dplyr::rename(country = Country.Region))
+
+```
+]
+
+.pull-right[
+```{r preparar, echo=FALSE}
+```
+]
+
+---
+# Salvar dados no DB2
+
+```{r}
+# Ler variáveis de ambiente
+readRenviron(".Renviron") 
+
+# Criar conexão com o banco
+drv <-
+  RJDBC::JDBC("com.ibm.db2.jcc.DB2Driver", "jars/db2jcc4.jar")
+
+host <- Sys.getenv("DB2_HOST")
+user <- Sys.getenv("DB2_USER")
+password <- Sys.getenv("DB2_PASSWORD")
+
+uri <- 
+  sprintf("jdbc:db2://%s/bludb:user=%s;password=%s;sslConnection=true;", 
+          host, user, password)
+
+db2 <-
+  DBI::dbConnect(drv, uri)
+```
+
+```{r eval=FALSE}
+# Escrever tabela no banco de dados
+DBI::dbWriteTable(db2, "COVID19", value = covid19, overwrite = TRUE)
+```
+
+---
+# Ler dados do DB2
+
+```{r}
+dplyr::tbl(db2, "COVID19") %>%
+  dplyr::filter(COUNTRY == "Brazil")
+```
+
+---
+# Análises
+
+```{r}
+brazil <- dplyr::tbl(db2, "COVID19") %>%
+  dplyr::filter(COUNTRY == "Brazil") %>%
+  dplyr::as_tibble() %>%
+  dplyr::mutate(DATE = DATE %>% lubridate::ymd())
+```
+
+## Distribuição do número de casos diários
+
+.pull-left[
+```{r plot1, eval=FALSE}
+brazil %>%
+  ggplot2::ggplot() +
+  ggplot2::aes(DATE, VALUE) +
+  ggplot2::geom_line() +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(x = "Data", 
+                y = "# de casos de COVID 19")
+```
+]
+
+.pull-right[
+```{r plot1, echo=FALSE, fig.height=4, fig.width=7, fig.align="center"}
+```
+]
+
+---
+# Análises
+## Distribuição da média móvel de 7 dias de casos
+
+```{r}
+brazil <- 
+  brazil %>%
+  dplyr::mutate(MOVING_AVERAGE = zoo::rollmean(VALUE, 7, align = "right", fill = NA)) #<<
+```
+
+.pull-left[
+```{r plot2, eval=FALSE}
+brazil %>%
+  ggplot2::ggplot() +
+  ggplot2::aes(DATE, MOVING_AVERAGE) +
+  ggplot2::geom_line() +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(x = "Data", 
+                y = "Média móvel de casos de COVID 19")
+```
+
+]
+.pull-right[
+```{r plot2, echo=FALSE, fig.height=4, fig.width=7, fig.align="center"}
+```
+]
+
+---
+# Análises
+## Valor máximo da distribuição de média móvel de 7 dias de casos
+
+```{r}
+brazil %>%
+  dplyr::filter(MOVING_AVERAGE == max(MOVING_AVERAGE, na.rm = TRUE)) %>%
+  dplyr::select(COUNTRY, DATE, MOVING_AVERAGE) %>%
+  reactable::reactable()
+```
+
+---
+# Análises
+## Distribuição da média móvel de 7 dias de casos (plotly)
+
+.pull-left[
+```{r plot3, eval=FALSE}
+gg <- brazil %>%
+  ggplot2::ggplot() +
+  ggplot2::aes(DATE, MOVING_AVERAGE) +
+  ggplot2::geom_line() +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(x = "Data", 
+                y = "Média móvel de casos de COVID 19")
+gg %>% 
+  plotly::ggplotly() #<<
+```
+]
+.pull-right[
+```{r plot3, echo=FALSE, fig.height=5, fig.width=7, fig.align="center"}
+```
+]
+
+---
+# Análises
+## Variação entre a média móvel mais atual e a média móvel anterior
+
+```{r delta, eval=FALSE}
+delta <- dplyr::tbl(db2, "COVID19") %>%
+  dplyr::filter(DATE %in% c("2022-04-22", "2022-04-23")) %>%
+  dplyr::as_tibble() %>%
+  dplyr::mutate(DATE = DATE %>% lubridate::ymd(),
+                MOVING_AVERAGE = zoo::rollmean(VALUE, 7, align = "right", fill = NA)) %>%
+  dplyr::group_by(COUNTRY) %>%
+  dplyr::mutate(`DELTA%` = (MOVING_AVERAGE - dplyr::lag(MOVING_AVERAGE))/dplyr::lag(MOVING_AVERAGE) * 100, #<<
+                `DELTA%` = ifelse(is.na(`DELTA%`), 0, round(`DELTA%`, 1))) %>%
+  dplyr::filter(DATE == "2022-04-23")
+
+gg <- delta %>%
+  dplyr::select(COUNTRY, `DELTA%`) %>%
+  ggplot2::ggplot() +
+  ggplot2::aes(COUNTRY, `DELTA%`) +
+  ggplot2::geom_col(fill = ifelse(delta$`DELTA%` > 0, "#cb6e5d", "#005c5b")) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(x = "Países", y = "Delta %")
+plotly::ggplotly(gg)
+```
+
+---
+# Análises
+## Variação entre a média móvel mais atual e a média móvel anterior
+
+```{r delta, echo=FALSE, fig.align="center", fig.height=6, fig.width=10}
+```
+
+---
+# Análises
+## Mapa com as variações percentuais
+
+.pull-left[
+```{r mapa, eval=FALSE}
+conpal <- 
+  leaflet::colorNumeric(palette = "RdBu", 
+                        domain = delta$`DELTA%`, 
+                        na.color = "black", 
+                        reverse = TRUE)
+
+delta %>%
+  dplyr::select(COUNTRY, LAT, LONG, `DELTA%`) %>%
+  leaflet::leaflet() %>%
+  leaflet::addProviderTiles("CartoDB.DarkMatter") %>%
+  leaflet::addCircleMarkers(~LONG, ~LAT, 
+                            label = paste(delta$COUNTRY, " ", 
+                                          round(delta$`DELTA%`, 1)),
+                            color = ~conpal(delta$`DELTA%`)) %>%
+  leaflet::addLegend(position = "bottomleft", 
+                     title = "Delta %",
+                     pal = conpal, 
+                     values = delta$`DELTA%`,
+                     opacity = 0.8)
+```
+]
+.pull-right[
+```{r mapa, echo=FALSE, fig.height=6}
+```
+]
+
+---
+# Funções SQL
+
+```{r}
+dplyr::tbl(db2, "COVID19") %>%
+  dplyr::mutate(REF_DATE = dplyr::sql("VARCHAR_FORMAT(LAST_DAY(TO_DATE(DATE, 'YYYYMMDD')), 'YYYY-MM-DD')")) %>% #<<
+  dplyr::group_by(COUNTRY, REF_DATE) %>%
+  dplyr::summarise(SUM = sum(VALUE, na.rm = TRUE), .groups = "drop") %>%
+  dplyr::filter(COUNTRY == "Brazil")
+```
+
+---
+class: inverse center middle
+background-color: #000
+
+.pull-left[
+# Obrigado
+]
+
+.pull-right[
+th1460.github.io<br>
+github.com/th1460<br>
+linkedin.com/in/thop<br>
 ]
