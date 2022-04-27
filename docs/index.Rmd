@@ -18,12 +18,10 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-
 knitr::opts_chunk$set(message = FALSE, 
                       warning = FALSE, 
                       fig.retina = 3,
                       comment = NA)
-
 ```
 
 class: inverse, left, middle
@@ -33,12 +31,13 @@ background-size: cover
 
 # Análise de dados de COVID 19: <br> utilizando CP4D e DB2
 
-## Educathon
+## Educathon 2022
 
 <img src="resources/images/logo-ibm.png" width="150px"/>
 
-Thiago Pires | Abr 2022 <br>
-[github.com/th1460/ibm-educathon-2022](https://github.com/th1460/ibm-educathon-2022)
+Thiago Pires | Abr 2022 <br><br><br>
+Repositório [github.com/th1460/ibm-educathon-2022](https://github.com/th1460/ibm-educathon-2022) <br>
+Slides [th1460.github.io/ibm-educathon-2022](https://th1460.github.io/ibm-educathon-2022)
 
 ---
 layout: true
@@ -168,7 +167,7 @@ knitr::include_graphics("resources/images/cp4d-rstudio-start.png")
 ---
 # Adicionando o DB2 no projeto
 
->*Um <mark>banco de dados SQL</mark> em cloud totalmente gerenciado e com escalabilidade sob demanda de computação e armazenamento.*
+>*O DB2 é um <mark>banco de dados SQL</mark> em cloud totalmente gerenciado e com escalabilidade sob demanda de computação e armazenamento.*
 
 .pull-left[
 - Ir na <mark>pesquisa por recursos</mark>
@@ -189,6 +188,8 @@ knitr::include_graphics("resources/images/cp4d-db2-credential.png")
 ```
 
 >*<mark>SQL significa Standard Query Language</mark>, literalmente a linguagem padrão para realizar queries. A linguagem SQL é utilizada de maneira relativamente parecida entre os principais bancos de dados relacionais do mercado*
+
+>*<mark>Bancos de dados relacionais</mark> são baseados no modelo relacional, uma maneira intuitiva e direta de representar dados em tabelas.*
 ]
 
 ---
@@ -196,7 +197,7 @@ knitr::include_graphics("resources/images/cp4d-db2-credential.png")
 
 Baixar repositório no RStudio
 ```{bash eval=FALSE}
-git clone git@github.com:th1460/ibm-educathon-2022.git
+git clone https://github.com/th1460/ibm-educathon-2022.git
 ```
 
 Instalar bibliotecas que serão utilizadas no projeto
@@ -465,11 +466,13 @@ class: inverse center middle
 background-color: #000
 
 .pull-left[
-# Obrigado
+# Obrigado!
 ]
 
 .pull-right[
-th1460.github.io<br>
-github.com/th1460<br>
-linkedin.com/in/thop<br>
+[th1460.github.io](https://th1460.github.io/)<br>
+[github.com/th1460](https://github.com/)<br>
+[medium.com/@thopr](https://medium.com/@thopr)<br>
+[linkedin.com/in/thop](https://www.linkedin.com/in/thop)<br><br>
+slides [th1460.github.io/ibm-educathon-2022](https://th1460.github.io/ibm-educathon-2022)
 ]
