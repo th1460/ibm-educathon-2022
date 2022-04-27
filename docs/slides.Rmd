@@ -265,11 +265,11 @@ covid19 %>%
 
 ```{r}
 # Ler variáveis de ambiente
-readRenviron(".Renviron") 
+readRenviron("../.Renviron") 
 
 # Criar conexão com o banco
 drv <-
-  RJDBC::JDBC("com.ibm.db2.jcc.DB2Driver", "jars/db2jcc4.jar")
+  RJDBC::JDBC("com.ibm.db2.jcc.DB2Driver", "../jars/db2jcc4.jar")
 
 host <- Sys.getenv("DB2_HOST")
 user <- Sys.getenv("DB2_USER")
