@@ -54,7 +54,8 @@ dplyr::tbl(db2, "COVID19") %>%
 brazil <- dplyr::tbl(db2, "COVID19") %>%
   dplyr::filter(COUNTRY == "Brazil") %>%
   dplyr::as_tibble() %>%
-  dplyr::mutate(DATE = DATE %>% lubridate::ymd())
+  dplyr::mutate(DATE = DATE %>% lubridate::ymd(),
+                VALUE = ifelse(VALUE < 0, NA, VALUE))
 
 ## Distribuição do número de casos diários --------------------------------
 brazil %>%
