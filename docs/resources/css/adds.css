@@ -2,3 +2,7 @@ mark {
 background-color: #fce803;
 opacity: 0.7;
 }
+
+img.rounded-corners {
+  border-radius: 50%;
+}
